@@ -1,0 +1,39 @@
+image: cypress/browsers:node-18.12.0-chrome-107
+
+stages:
+  - install
+  - test
+
+cache:
+  paths:
+    - node_modules/
+
+variables:
+  CYPRESS_CACHE_FOLDER: ~/.cache/Cypress
+  CI: "true"
+
+before_script:
+  - npm ci
+
+install_dependencies:
+  stage: install
+  script:
+    - echo "Installing dependencies"
+  artifacts:
+    paths:
+      - node_modules/
+
+cypress_run_tests:
+  stage: test
+  script:
+    - npx cypress run --browser chrome
+  artifacts:
+    when: always
+    paths:
+      - cypress/screenshots/
+      - cypress/videos/
+    reports:
+      junit: cypress/results/junit-results.xml
+  only:
+    - merge_requests
+    - branches
